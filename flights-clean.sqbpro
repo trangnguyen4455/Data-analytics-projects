@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/a1777963/Box/UNIVERSITY COMPUTER/A-TRANG/a-WORK-2019/C-SKILL TRAINING M/Swinburne/INF60018-Data Analytics for Business/Assignment 2/ATL_flights.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure pragmas browser query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="5417"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,7:mainFlights"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Flights" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="55"/><column index="2" value="74"/><column index="3" value="52"/><column index="4" value="140"/><column index="5" value="83"/><column index="6" value="160"/><column index="7" value="136"/><column index="8" value="166"/><column index="9" value="86"/><column index="10" value="99"/><column index="11" value="129"/><column index="12" value="228"/><column index="13" value="167"/><column index="14" value="180"/><column index="15" value="220"/><column index="16" value="238"/><column index="17" value="118"/><column index="18" value="148"/><column index="19" value="202"/><column index="20" value="141"/><column index="21" value="154"/><column index="22" value="188"/><column index="23" value="163"/><column index="24" value="150"/><column index="25" value="217"/><column index="26" value="161"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="flightdata" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="62"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="testing code-flightdata">-- Assingment 1-23feb23
+
+SELECT * from flightdata; --24020 rows
+
+
+PRAGMA table_info(flightdata);
+
+----- DATA CLEANING AND TRANSFORMATION
+
+SELECT DISTINCT YEAR from flightdata;
+SELECT * FROM flightdata where YEAR is not 2015;
+DELETE FROM flightdata where YEAR is not 2015;
+
+SELECT DISTINCT MONTH from flightdata;
+SELECT * FROM flightdata where MONTH is NULL or MONTH &gt; 12;
+DELETE FROM flightdata where MONTH is NULL or MONTH &gt; 12;
+
+SELECT DISTINCT DAY from flightdata ORDER by DAY ASC;
+
+SELECT DISTINCT DAY_OF_WEEK from flightdata;
+SELECT * FROM flightdata where DAY_OF_WEEK = 'WEDS';
+UPDATE flightdata SET DAY_OF_WEEK = 3 WHERE DAY_OF_WEEK = 'WEDS';
+
+-- date of the week can be traced back with info of month and day
+SELECT * FROM flightdata where DAY_OF_WEEK &gt; 7 or DAY_OF_WEEK is NULL;
+SELECT * FROM flightdata WHERE MONTH=1 and DAY=1 and DAY_OF_WEEK is not 4;
+UPDATE flightdata SET DAY_OF_WEEK = 4 WHERE MONTH=1 and DAY=1 and DAY_OF_WEEK is not 4;
+
+-- 8 march 2015 is Sunday (day 7)
+SELECT * FROM flightdata WHERE MONTH=3 and DAY=8 and DAY_OF_WEEK is not 7;
+UPDATE flightdata SET DAY_OF_WEEK =7 WHERE MONTH=3 and DAY=8 and DAY_OF_WEEK is not 7;
+
+-- 27 march 2015 is Friday (day 5)
+SELECT * FROM flightdata WHERE MONTH=3 and DAY=27 and DAY_OF_WEEK is not 5;
+UPDATE flightdata SET DAY_OF_WEEK =5 WHERE MONTH=3 and DAY=27 and DAY_OF_WEEK is not 5
+
+SELECT * from flightdata; --24020 rows
+
+SELECT DISTINCT IATA_CODE_AIRLINE from flightdata;
+SELECT DISTINCT IATA_CODE from airlines;
+SELECT * from flightdata where IATA_CODE_AIRLINE is NULL;
+DELETE FROM flightdata WHERE IATA_CODE_AIRLINE is NULL;
+
+SELECT DISTINCT FLIGHT_NUMBER from flightdata; -- seem ok
+
+SELECT DISTINCT TAIL_NUMBER from flightdata; -- seem ok
+
+SELECT DISTINCT ORIGIN_AIRPORT from flightdata;
+select ORIGIN_AIRPORT from flightdata where ORIGIN_AIRPORT is not &quot;LAX&quot;; -- 170 rows 
+
+SELECT DISTINCT CANCELLATIONS from flightdata; -- there are no calculations
+
+-- remove flights that are not departed from LAX
+select distinct ORIGIN_AIRPORT 
+from flightdata;
+
+select *
+from flightdata
+where ORIGIN_AIRPORT is NULL;
+
+select * 
+from flightdata 
+where ORIGIN_AIRPORT != 'LAX' or ORIGIN_AIRPORT is NULL; -- 170 rows
+
+delete 
+from flightdata
+where ORIGIN_AIRPORT != 'LAX' or ORIGIN_AIRPORT is NULL; -- 170 rows
+
+-- select * 
+-- from flightdata 
+-- where ORIGIN_AIRPORT is not 'LAX'; --170
+
+-- select * 
+-- from flightdata 
+-- where not ORIGIN_AIRPORT ='LAX'; --165
+
+-- select * 
+-- from flightdata 
+-- where ORIGIN_AIRPORT !='LAX'; --165
+
+SELECT * from flightdata; --23849 rows
+
+SELECT DISTINCT DESTINATION_AIRPORT
+FROM flightdata
+;
+
+SELECT * 
+FROM flightdata
+WHERE DESTINATION_AIRPORT is NULL
+;
+
+DELETE
+FROM flightdata
+WHERE DESTINATION_AIRPORT is NULL
+;
+
+--- checking again the dataset
+SELECT * from flightdata; --23808 rows
+
+
+-- Check null VALUES
+PRAGMA table_info(flightdata);
+
+select *
+from flightdata
+where YEAR is null
+	or MONTH is null 
+	or DAY is null 
+	or DAY_OF_WEEK is null 
+	or IATA_CODE_AIRLINE is null
+	or FLIGHT_NUMBER is null 
+	or TAIL_NUMBER is null 
+	or ORIGIN_AIRPORT is null 
+	or DESTINATION_AIRPORT is null
+ ;
+
+ -- Checking unique values of year, month, day, day of the week
+ SELECT count(DISTINCT year) as years_count,
+		count(DISTINCT MONTH) as months_count,
+		count(DISTINCT DAY) as days_count,
+		count(DISTINCT DAY_OF_WEEK) as day_of_week_count,
+		count(DISTINCT IATA_CODE_AIRLINE) as IATA_count
+	FROM flightdata
+		
+ 
+SELECT * FROM flightdata;
+ 
+--ALTER TABLE flightdata ADD COLUMN id INTEGER PRIMARY KEY AUTOINCREMENT;
+
+
+----- DATA ANALYSIS
+
+-- Check the average time of delay for departure flights
+SELECT avg(DEPARTURE_DELAYInMinutes), min(DEPARTURE_DELAYInMinutes), max(DEPARTURE_DELAYInMinutes)--, STDDEV(DEPARTURE_DELAYInMinutes)
+from flightdata; 
+
+select 
+count DEPARTURE_DELAYInMinutes
+
+
+;
+
+
+-- Check the average time of delay for arival flights
+SELECT avg(ARRIVAL_DELAYInMinutes), min(ARRIVAL_DELAYInMinutes), max(ARRIVAL_DELAYInMinutes)
+from flightdata; 
+
+-- DESCRITIVE STATISTICS OF ALL VARIABLES
+SELECT avg(YEAR), min(YEAR), max(YEAR)
+from flightdata;
+
+
+-- common reasons for delays:
+SELECT * from flightdata where DEPARTURE_DELAYInMinutes &gt; 0;
+
+SELECT AIR_SYSTEM_DELAY, SECURITY_DELAY, AIRLINE_DELAY, LATE_AIRCRAFT_DELAY, WEATHER_DELAY, DEPARTURE_DELAYInMinutes 
+from flightdata 
+where DEPARTURE_DELAYInMinutes &gt; 60 and DEPARTURE_DELAYInMinutes &lt; 180
+ORDER by DEPARTURE_DELAYInMinutes ASC;
+--group by DEPARTURE_DELAYInMinutes;
+
+-- air system delay
+SELECT DEPARTURE_DELAYInMinutes, avg(AIR_SYSTEM_DELAY), min(AIR_SYSTEM_DELAY), max(AIR_SYSTEM_DELAY)
+from flightdata; 
+
+-- Delay times
+-- delay less than 15 minutes
+select count(*)
+from flightdata 
+where DEPARTURE_DELAYInMinutes &lt; 15;
+
+select count(*)
+from flightdata 
+where DEPARTURE_DELAYInMinutes &gt; 15 and DEPARTURE_DELAYInMinutes &lt; 60;
+
+select count(*)
+from flightdata 
+where DEPARTURE_DELAYInMinutes &gt; 60;
+
+
+
+-- 1) Are there common types of delays for certain airports?
+-- 
+
+-- destination airport that have delays more than 60 minutes
+SELECT DESTINATION_AIRPORT, DEPARTURE_DELAYInMinutes, ARRIVAL_DELAYInMinutes
+FROM flightdata
+where DEPARTURE_DELAYInMinutes &gt; 60 and ARRIVAL_DELAYInMinutes &gt; 60
+GROUP by DESTINATION_AIRPORT
+ORDER by DEPARTURE_DELAYInMinutes DESC;
+
+--- Top 10 destination airport that have delays more than 8 hours (480 minutes)
+SELECT DESTINATION_AIRPORT, DEPARTURE_DELAYInMinutes, ARRIVAL_DELAYInMinutes
+FROM flightdata
+where DEPARTURE_DELAYInMinutes &gt; 480 and ARRIVAL_DELAYInMinutes &gt; 480
+GROUP by DESTINATION_AIRPORT
+ORDER by DEPARTURE_DELAYInMinutes DESC
+LIMIT 10;
+
+--- Top 10 destination airport that have delays sort by average delay in minutes
+SELECT DESTINATION_AIRPORT, DEPARTURE_DELAYInMinutes, ARRIVAL_DELAYInMinutes
+FROM flightdata
+GROUP by DESTINATION_AIRPORT
+ORDER by DEPARTURE_DELAYInMinutes DESC
+LIMIT 10;
+
+SELECT FLIGHT_NUMBER, DEPARTURE_DELAYInMinutes, ARRIVAL_DELAYInMinutes
+FROM flightdata;
+
+-- Departure delays - summary statistics
+SELECT avg(DEPARTURE_DELAYInMinutes),
+	   min(DEPARTURE_DELAYInMinutes),
+	   max(DEPARTURE_DELAYInMinutes)
+FROM flightdata;
+
+-- Arrival delays - summary statistics
+SELECT avg(ARRIVAL_DELAYInMinutes),
+	   min(ARRIVAL_DELAYInMinutes),
+	   max(ARRIVAL_DELAYInMinutes)
+FROM flightdata;
+
+-- groups arrival delays
+SELECT count(ARRIVAL_DELAYInMinutes),
+WHERE ARRIVAL_DELAYInMinutes &lt; 30 
+
+--- Delay time in minutes and reasons for delays
+SELECT FLIGHT_NUMBER, DEPARTURE_DELAYInMinutes, ARRIVAL_DELAYInMinutes,
+		AIR_SYSTEM_DELAY, SECURITY_DELAY, AIRLINE_DELAY, LATE_AIRCRAFT_DELAY, WEATHER_DELAY
+FROM flightdata;
+
+----- Looking at delay time and reasons for delays
+-- Air system delays
+SELECT avg(AIR_SYSTEM_DELAY), min (AIR_SYSTEM_DELAY), max(air_system_delay)
+FROM flightdata;
+-- Delays caused by air system in average is short (less than 9 minutes)
+
+SELECT count(air_system_delay) 
+FROM flightdata
+WHERE AIRLINE_DELAY &gt; 60; --- 2118
+
+
+
+
+
+
+
+--------------------------------------------------------------------------------------
+-- Tuesday 28 Feb 2023
+-- find departure delay time in groups
+
+-- Just checking if flight numbers are unique to each flight so it can be a primary key.
+SELECT count(DISTINCT FLIGHT_NUMBER)
+	FROM flightdata;
+	
+SELECT 	FLIGHT_NUMBER,
+		count(flight_number)
+	FROM flightdata
+	GROUP BY FLIGHT_NUMBER
+	ORDER By FLIGHT_NUMBER;
+
+SELECT count(flight_number)
+	FROM flightdata
+	WHERE FLIGHT_NUMBER is NULL;
+	
+SELECT count(*)
+	FROM flightdata;
+
+-- Delays time in DEPARTURE_DELAYInMinutes
+SELECT DEPARTURE_DELAYInMinutes,
+	 CASE WHEN DEPARTURE_DELAYInMinutes &lt; 30 THEN '1-less than 30 mins'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 30 AND 59 THEN '2-30 mins to less than 1 hr'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 60 AND 299 THEN '3-1hr to less than 3hrs'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 300 and 479 THEN '4-3 hrs to less than 8 hrs'
+		  ELSE '5-8 hrs and over' END AS delay_time,
+	count (DEPARTURE_DELAYInMinutes)
+	FROM flightdata
+	GROUP by delay_time
+	ORDER by delay_time;
+	 
+-- Arrival delays in groups
+SELECT
+	 CASE WHEN ARRIVAL_DELAYInMinutes &lt; 30 THEN '1-less than 30 mins'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 30 AND 59 THEN '2-30 mins to less than 1 hr'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 60 AND 299 THEN '3-1hr to less than 3hrs'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 300 and 479 THEN '4-3 hrs to less than 8 hrs'
+		  ELSE '5-8 hrs and over' END AS delay_time,
+	count (ARRIVAL_DELAYInMinutes)
+	FROM flightdata
+	GROUP by delay_time
+	ORDER by delay_time;
+
+-- average arrival delays in minutes by month 
+SELECT MONTH,
+	   avg(ARRIVAL_DELAYInMinutes) as avg_arrival_delay
+	FROM flightdata
+	GROUP by MONTH
+	ORDER by 2 DESC;
+	
+SELECT MONTH,
+	   avg(DEPARTURE_DELAYInMinutes) as avg_departure_delay
+	FROM flightdata
+	GROUP by MONTH
+	ORDER by 2 DESC;
+	
+
+/*Are there common types of delays for certain airports/areas/states (or by airline)? */
+-- by airport
+SELECT * FROM flightdata
+SELECT * FROM airlines
+SELECT * FROM airports
+
+SELECT DISTINCT DESTINATION_AIRPORT
+	FROM flightdata
+
+SELECT DISTINCT IATA_CODE
+	FROM airports
+	
+--- Delay reasons 
+SELECT 	airports.IATA_CODE,
+		airports.AIRPORT,
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as air_system_delay_count,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as security_delay_count,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as late_aircraft_delay_count,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay_count
+	 FROM flightdata flightdata 
+	 JOIN airports airports 
+	 ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	 GROUP by airports.IATA_CODE
+	 ORDER by 3 DESC, 4 DESC, 5 DESC, 6 DESC
+	
+-- Delay times
+	
+-- air system delay at airports
+SELECT 	airports.IATA_CODE,
+		airports.AIRPORT,
+		count(flightdata.SECURITY_DELAY),
+		avg(flightdata.SECURITY_DELAY)
+
+	FROM flightdata flightdata 
+	JOIN airports airports 
+	ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	AND flightdata.SECURITY_DELAY &gt; 0
+	GROUP by airports.IATA_CODE
+	ORDER by 3 DESC, 4 DESC
+	
+	
+-- security delay at different airports
+	SELECT 	airports.IATA_CODE,
+		airports.AIRPORT,
+		count(flightdata.AIR_SYSTEM_DELAY),
+		avg(flightdata.AIR_SYSTEM_DELAY)
+
+	 FROM flightdata flightdata 
+	 JOIN airports airports 
+	 ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	 AND flightdata.AIR_SYSTEM_DELAY &gt; 0
+	GROUP by airports.IATA_CODE
+	ORDER by 3 DESC, 4 DESC
+
+SELECT count(flights.AIR_SYSTEM_DELAY)
+	FROM flightdata flightdata
+	JOIN airports airports 
+	ON flights.IATA_CODE_AIRLINE = airports.IATA_CODE
+	GROUP by flights.IATA_CODE_AIRLINE
+	ORDER by flights.IATA_CODE_AIRLINE;
+
+	
+-- Airlines that have fewer delays
+SELECT * FROM airlines
+SELECT * FROM flightdata
+----------------------------------------------
+SELECT 	airlines.IATA_CODE,
+		airlines.AIRLINE,
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as air_system_delay_count,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as security_delay_count,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as late_aircraft_delay_count,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay_count
+	 FROM flightdata flightdata 
+	 JOIN airlines airlines 
+	 ON flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	 GROUP by airlines.IATA_CODE
+	 ORDER by 3 DESC, 4 DESC, 5 DESC, 6 DESC
+	 
+-- count all flights operated by airlines 
+SELECT 	airlines.IATA_CODE,
+		airlines.AIRLINE,
+		count(*)
+	 FROM flightdata flightdata 
+	 JOIN airlines airlines 
+	 ON flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	 GROUP by airlines.IATA_CODE
+	 ORDER by 3 DESC
+	 
+--------------------
+-- order by airlines 
+-- Count all flights that are operated by airlines
+
+SELECT 	airlines.IATA_CODE,
+		airlines.AIRLINE,
+		count(*)
+	 FROM flightdata flightdata 
+	 JOIN airlines airlines 
+	 ON flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	 GROUP by airlines.IATA_CODE
+	 ORDER by airlines.IATA_CODE;
+	 
+-- Count flights that are delayed by various reasons
+SELECT 	airlines.IATA_CODE,
+		airlines.AIRLINE,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes is not NULL END) as total_flight_operation,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as total_arrival_delay,
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as air_system_delay_count,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as security_delay_count,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as late_aircraft_delay_count,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay_count
+	 FROM flightdata flightdata 
+	 JOIN airlines airlines 
+	 ON flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	 GROUP by airlines.IATA_CODE
+	 ORDER by airlines.IATA_CODE
+
+SELECT count(*) FROM flightdata
+
+SELECT count(ARRIVAL_DELAYInMinutes)
+	FROM flightdata
+	WHERE ARRIVAL_DELAYInMinutes = 0
+
+
+</sql><sql name="Assign1-trang">-- Thi Thu Trang Nguyen
+Student ID: 104255969
+Email: 104255969@student.swin.edu.au 
+--------------------------------------------------------
+----- GENERAL VIEWING TO UNDERSTAND THE TABLES AND THEIR STRUCTURES 
+SELECT * from flightdata; --24032 rows
+SELECT * from airports; --322 rows
+SELECT * from airlines; --14 rows
+
+PRAGMA table_info(flightdata); -- retrive metadata about the table
+PRAGMA table_info(airports)
+
+---------------------------------------------------------
+----- PREPARING DATA
+--- Finding null values in all columns
+SELECT *
+	FROM flightdata
+	WHERE YEAR is NULL
+		AND	MONTH is NULL
+		AND	DAY is NULL
+		AND	DAY_OF_WEEK is NULL
+		AND	IATA_CODE_AIRLINE is NULL
+		AND	FLIGHT_NUMBER is NULL
+		AND	TAIL_NUMBER is NULL
+		AND	ORIGIN_AIRPORT is NULL
+		AND	DESTINATION_AIRPORT is NULL
+		AND	SCHEDULEDDEPARTURE_TIME is NULL
+		AND	ACTUALDEPARTURE_TIME is NULL
+		AND	DEPARTURE_DELAYInMinutes is NULL
+		AND	SCHEDULEDARRIVAL_TIME is NULL
+		AND	ACTUALARRIVAL_TIME is NULL
+		AND	ARRIVAL_DELAYInMinutes is NULL
+		AND	CANCELLATIONS is NULL
+		AND	AIR_SYSTEM_DELAY is NULL
+		AND	SECURITY_DELAY is NULL
+		AND	AIRLINE_DELAY is NULL
+		AND	LATE_AIRCRAFT_DELAY is NULL
+		AND	WEATHER_DELAY is NULL
+		
+		
+--- Finding null values in at least one column
+SELECT *
+	FROM flightdata
+	WHERE YEAR is NULL
+		or	MONTH is NULL
+		or	DAY is NULL
+		or	DAY_OF_WEEK is NULL
+		or	IATA_CODE_AIRLINE is NULL
+		or	FLIGHT_NUMBER is NULL
+		or	TAIL_NUMBER is NULL
+		or	ORIGIN_AIRPORT is NULL
+		or	DESTINATION_AIRPORT is NULL
+		or	SCHEDULEDDEPARTURE_TIME is NULL
+		or	ACTUALDEPARTURE_TIME is NULL
+		or	DEPARTURE_DELAYInMinutes is NULL
+		or	SCHEDULEDARRIVAL_TIME is NULL
+		or	ACTUALARRIVAL_TIME is NULL
+		or	ARRIVAL_DELAYInMinutes is NULL
+		or	AIR_SYSTEM_DELAY is NULL
+		or	SECURITY_DELAY is NULL
+		or	AIRLINE_DELAY is NULL
+		or	LATE_AIRCRAFT_DELAY is NULL
+		or	WEATHER_DELAY is NULL
+
+--- find and delete null values in origin airport column
+SELECT *
+	FROM flightdata 
+	WHERE DESTINATION_AIRPORT is NULL -- 42 + 5 rows
+	or	  ORIGIN_AIRPORT is NULL;
+
+DELETE 
+	FROM flightdata 
+	WHERE DESTINATION_AIRPORT is NULL -- 42 +5 rows
+	or    ORIGIN_AIRPORT is NULL;
+	
+---find and delete null values
+SELECT * -- 3 rows
+	FROM flightdata
+	WHERE YEAR is NULL
+		or	MONTH is NULL
+		or	DAY is NULL
+		or	DAY_OF_WEEK is NULL
+
+SELECT * 
+	FROM flightdata
+	WHERE MONTH=3 and DAY=27;
+
+UPDATE flightdata -- 3 rows
+	SET DAY_OF_WEEK =5 	
+	WHERE MONTH=3 and DAY=27 and DAY_OF_WEEK is not 5;	
+
+---
+SELECT * -- 6 rows
+	FROM flightdata
+	WHERE FLIGHT_NUMBER is NULL;
+
+DELETE
+	FROM flightdata
+	WHERE FLIGHT_NUMBER is NULL;	
+-------------------------
+-- No column has null values except CANCELLATIONS
+SELECT * FROM flightdata -- 23967 rows 
+
+----------------------------		
+SELECT DISTINCT YEAR
+	FROM flightdata;
+
+SELECT YEAR
+	FROM flightdata 
+	WHERE YEAR is NULL 
+		  OR YEAR is not 2015;
+	
+DELETE 
+	FROM flightdata 
+	WHERE YEAR is NULL OR YEAR is not 2015;
+	
+---
+SELECT DISTINCT MONTH from flightdata;
+SELECT * 
+	FROM flightdata 
+	WHERE MONTH is NULL OR MONTH &gt; 12; -- 3 rows
+
+DELETE FROM flightdata where MONTH is NULL or MONTH &gt; 12;
+
+---
+SELECT DISTINCT DAY 
+	FROM flightdata 
+	ORDER by DAY ASC;
+	
+---
+SELECT DISTINCT DAY_OF_WEEK
+	FROM flightdata 
+	ORDER by DAY;
+
+SELECT * 
+	FROM flightdata 
+	WHERE DAY_OF_WEEK = 'WEDS'; -- 4 rows
+
+UPDATE flightdata 
+	SET DAY_OF_WEEK = 3 
+	WHERE DAY_OF_WEEK = 'WEDS';
+
+SELECT * FROM flightdata where DAY_OF_WEEK &gt; 7; -- 11 rows
+
+-- 1/1/2015 is Thursday (day 4)
+SELECT * 
+	FROM flightdata 
+	WHERE MONTH = 1 AND DAY = 1 AND DAY_OF_WEEK != 4 -- 9 rows
+
+UPDATE flightdata 
+	SET DAY_OF_WEEK = 4 WHERE MONTH = 1 AND DAY = 1 AND DAY_OF_WEEK != 4;
+
+-- 8/3/2015 is Sunday (day 7)
+SELECT * 
+	FROM flightdata 
+	WHERE MONTH = 3 AND DAY = 8 AND DAY_OF_WEEK != 7 -- 2 rows
+
+UPDATE flightdata 
+	SET DAY_OF_WEEK = 7 WHERE MONTH = 3 AND DAY = 8 AND DAY_OF_WEEK != 7;
+-----------------------------------------
+SELECT * from flightdata; --23967 rows
+----------------------------------------
+SELECT DISTINCT IATA_CODE_AIRLINE from flightdata; -- seem ok
+SELECT DISTINCT IATA_CODE from airlines;
+SELECT DISTINCT FLIGHT_NUMBER from flightdata; -- seem ok
+SELECT DISTINCT TAIL_NUMBER from flightdata; -- seem ok
+
+SELECT DISTINCT ORIGIN_AIRPORT from flightdata;
+SELECT ORIGIN_AIRPORT 
+	FROM flightdata 
+	WHERE ORIGIN_AIRPORT is NOT &quot;LAX&quot;; -- 165 rows 
+
+DELETE
+	FROM flightdata
+	WHERE ORIGIN_AIRPORT != 'LAX'; -- 165 rows
+
+SELECT DISTINCT CANCELLATIONS from flightdata; -- there are no calculations
+-----------------------------------------
+SELECT * from flightdata; --23802 rows
+----------------------------------------
+-- Diagnose departure/arrival delay times
+SELECT 	min(DEPARTURE_DELAYInMinutes),
+		avg(DEPARTURE_DELAYInMinutes),
+		max(DEPARTURE_DELAYInMinutes)
+	FROM flightdata
+	
+SELECT 	min(ARRIVAL_DELAYInMinutes),
+		avg(ARRIVAL_DELAYInMinutes),
+		max(ARRIVAL_DELAYInMinutes)
+	FROM flightdata
+
+SELECT 	id, 
+		DEPARTURE_DELAYInMinutes,
+		ARRIVAL_DELAYInMinutes
+	FROM flightdata
+
+SELECT ARRIVAL_DELAYInMinutes
+	FROM flightdata
+	WHERE ARRIVAL_DELAYInMinutes &gt; 250
+	ORDER by ARRIVAL_DELAYInMinutes DESC;
+	
+
+
+	
+----- DATA ANALYSIS
+--- Delays in groups
+-- Departure delays
+SELECT 
+	CASE WHEN DEPARTURE_DELAYInMinutes &lt; 30 THEN '1-less than 30 mins'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 30 AND 59 THEN '2-30 mins to less than 1 hr'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 60 AND 179 THEN '3-1 hr to less than 3 hrs'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 60 AND 299 THEN '4-3 hrs to less than 5 hrs'
+		  WHEN DEPARTURE_DELAYInMinutes BETWEEN 300 and 479 THEN '5-5 hrs to less than 8 hrs'
+		  ELSE '6-8 hrs and over' END AS delay_time,
+	count (DEPARTURE_DELAYInMinutes)
+	FROM flightdata
+	GROUP by delay_time
+	ORDER by delay_time;
+	
+	
+-- Arrival delays in groups
+SELECT
+	CASE WHEN ARRIVAL_DELAYInMinutes &lt; 30 THEN '1-less than 30 mins'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 30 AND 59 THEN '2-30 mins to less than 1 hr'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 60 AND 179 THEN '3-1 hr to less than 3 hrs'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 60 AND 299 THEN '4-3 hrs to less than 5 hrs'
+		  WHEN ARRIVAL_DELAYInMinutes BETWEEN 300 and 479 THEN '5-5 hrs to less than 8 hrs'
+		  ELSE '6-8 hrs and over' END AS delay_time,
+	count (ARRIVAL_DELAYInMinutes)
+	FROM flightdata
+	GROUP by delay_time
+	ORDER by delay_time;
+
+------- Decide to analyse the data with departure and arrival delays both &lt;= 299
+SELECT *
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND ARRIVAL_DELAYInMinutes &lt;= 299 -- This results in 23852 rows remained for further analyses
+
+------ Create this table to work with delay time in new dataset.
+SELECT id,
+		DEPARTURE_DELAYInMinutes,
+		ARRIVAL_DELAYInMinutes
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299	
+	
+-------------
+-- numbers of flights delays by reasons.
+SELECT 
+		count(CASE WHEN LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as late_aircraft_delay_count,
+		avg(LATE_AIRCRAFT_DELAY) as late_aircraft_delay_avg,
+		
+		count(CASE WHEN AIRLINE_DELAY &gt; 0 THEN 1 END) as airline_delay_count,
+		avg(AIRLINE_DELAY) as airline_delay_avg,
+		
+		count(CASE WHEN AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as air_system_delay_count,
+		avg(AIR_SYSTEM_DELAY) as air_system_delay_avg,
+		
+		count(CASE WHEN WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay_count,
+		avg(WEATHER_DELAY) as weather_delay_avg,
+		
+		count(CASE WHEN SECURITY_DELAY &gt; 0 THEN 1 END) as security_delay_count,
+		avg(SECURITY_DELAY) as security_delay_avg
+		
+	 FROM flightdata 
+	 WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	 and ARRIVAL_DELAYInMinutes &lt;= 299
+	ORDER by 3 DESC, 3 DESC, 5 DESC, 7 DESC, 9 DESC
+	
+	
+-- Reasons for delays by destination airports 
+-- SELECT 	airports.IATA_CODE,
+-- 		airports.AIRPORT,
+-- 		
+-- 		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as late_aircraft_delay_count,
+-- 		count(CASE WHEN flightdata.AIRLINE_DELAY &gt; 0 THEN 1 END) as airline_delay_count,
+-- 		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as air_system_delay_count,
+-- 		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay_count,
+-- 		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as security_delay_count
+-- 	 FROM flightdata flightdata 
+-- 	 JOIN airports airports 
+-- 	 ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+-- 	
+-- 	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+-- 	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+-- 	GROUP by airports.IATA_CODE
+-- 	ORDER by 3 DESC, 4 DESC, 5 DESC, 6 DESC, 7 DESC
+
+
+------------------
+-- Delays at different airports 
+-- SELECT * FROM flightdata;
+-- SELECT * FROM airlines;
+-- SELECT * FROM airports;
+-- 
+-- SELECT DISTINCT DESTINATION_AIRPORT
+-- 	FROM flightdata
+-- 
+-- SELECT DISTINCT IATA_CODE
+-- 	FROM airports
+	
+--- delay in different airports 
+--- Number of flights delays in different airports
+-- SELECT 	airports.IATA_CODE,
+-- 		airports.AIRPORT,
+-- 		count(CASE WHEN flightdata.DEPARTURE_DELAYInMinutes &gt; 0 THEN 1 END) as departure_delay_count,
+-- 		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as arrival_delay_count,
+-- 		avg(flightdata.DEPARTURE_DELAYInMinutes) as avg_departure_delay,
+-- 		avg(flightdata.ARRIVAL_DELAYInMinutes) as avg_arrival_delay
+-- 		
+-- 	 FROM flightdata flightdata 
+-- 	 JOIN airports airports 
+-- 	 ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+-- 	 GROUP by airports.IATA_CODE
+-- 	 ORDER by 3 DESC
+-- 
+-- SELECT 	count(CASE WHEN DEPARTURE_DELAYInMinutes = 0 THEN 1 END) as departure_delay_count,
+-- 		count(CASE WHEN ARRIVAL_DELAYInMinutes = 0 THEN 1 END) as arrival_delay_count;
+-- 	FROM flightdata
+
+---- testing one airport to see if when there is a delay in depart, would it be a delay in arrival
+-- SELECT 	airports.IATA_CODE,
+-- 		airports.AIRPORT,
+-- 		flightdata.DEPARTURE_DELAYInMinutes,
+-- 		flightdata.ARRIVAL_DELAYInMinutes
+-- 	 FROM flightdata flightdata 
+-- 	 JOIN airports airports 
+-- 	 ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+-- 	 WHERE airports.IATA_CODE = 'SFO';
+		
+-----------
+--- Reasons for delays at different airports/cities/states
+SELECT *
+	FROM flightdata
+	
+--- Common types of delays in different airports
+SELECT 	airports.IATA_CODE,
+		airports.AIRPORT,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as count_arrival_delay,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as count_late_aircraft_delay,
+		count(CASE WHEN flightdata.AIRLINE_DELAY &gt; 0 THEN 1 END) as count_airline_delay,		
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as count_air_system_delay,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as count_security_delay
+	FROM flightdata flightdata
+	JOIN airports airports
+	ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by airports.IATA_CODE
+	ORDER by 3 DESC, 4 DESC, 5 DESC, 6 DESC, 7 DESC, 8 DESC
+
+--- Common types of delays for different cities
+SELECT 	
+		airports.CITY,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as count_arrival_delay,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as count_late_aircraft_delay,
+		count(CASE WHEN flightdata.AIRLINE_DELAY &gt; 0 THEN 1 END) as count_airline_delay,		
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as count_air_system_delay,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as count_weather_delay,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as count_security_delay
+	FROM flightdata flightdata
+	JOIN airports airports
+	ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by airports.CITY
+	ORDER by 2 DESC, 3 DESC, 4 DESC, 5 DESC, 6 DESC, 7 DESC;
+	
+	
+--- Common types of delays in different states
+SELECT 	
+		airports.STATE,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as count_arrival_delay,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as count_late_aircraft_delay,
+		count(CASE WHEN flightdata.AIRLINE_DELAY &gt; 0 THEN 1 END) as count_airline_delay,		
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as count_air_system_delay,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as count_weather_delay,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as count_security_delay
+	FROM flightdata flightdata
+	JOIN airports airports
+	ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by airports.STATE
+	ORDER by 2 DESC, 3 DESC, 4 DESC, 5 DESC, 6 DESC, 7 DESC;
+
+---
+SELECT 	flightdata.DESTINATION_AIRPORT,
+		airports.AIRPORT,
+		airports.CITY,
+		airports.STATE
+	FROM flightdata
+	JOIN airports
+	ON flightdata.DESTINATION_AIRPORT = airports.IATA_CODE
+	GROUP by airports.AIRPORT
+	ORDER by airports.AIRPORT
+
+--- Types of delays in different airlines
+SELECT 	airlines.IATA_CODE,
+		airlines.AIRLINE,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as count_arrival_delay,
+		count(CASE WHEN flightdata.LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as count_late_aircraft_delay,
+		count(CASE WHEN flightdata.AIRLINE_DELAY &gt; 0 THEN 1 END) as count_airline_delay,		
+		count(CASE WHEN flightdata.AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as count_air_system_delay,
+		count(CASE WHEN flightdata.WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay,
+		count(CASE WHEN flightdata.SECURITY_DELAY &gt; 0 THEN 1 END) as count_security_delay
+	FROM flightdata flightdata
+	JOIN airlines airlines
+	ON flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by airlines.IATA_CODE
+	ORDER by 3 DESC, 4 DESC, 5 DESC, 6 DESC, 7 DESC, 8 DESC;
+
+--- Types of delays in different months
+
+SELECT 	flightdata.MONTH,
+		count(CASE WHEN flightdata.ARRIVAL_DELAYInMinutes &gt; 0 THEN 1 END) as count_arrival_delay,
+		count(CASE WHEN LATE_AIRCRAFT_DELAY &gt; 0 THEN 1 END) as count_late_aircraft_delay,
+		count(CASE WHEN AIRLINE_DELAY &gt; 0 THEN 1 END) as count_airline_delay,
+		count(CASE WHEN AIR_SYSTEM_DELAY &gt; 0 THEN 1 END) as count_air_system_delay,
+		count(CASE WHEN WEATHER_DELAY &gt; 0 THEN 1 END) as weather_delay,
+		count(CASE WHEN SECURITY_DELAY &gt; 0 THEN 1 END) as count_security_delay
+	FROM flightdata flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by MONTH
+	ORDER by MONTH;
+	
+---------
+-- average arrival delays in minutes by month 
+SELECT MONTH,
+	   count(DEPARTURE_DELAYInMinutes) as count_departure_delay,
+	   avg(DEPARTURE_DELAYInMinutes) as avg_departure_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by MONTH
+	ORDER by 1;
+
+
+SELECT MONTH,
+	   count(ARRIVAL_DELAYInMinutes) as count_arrival_delay,
+	   avg(ARRIVAL_DELAYInMinutes) as avg_arrival_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by MONTH
+	ORDER by 1;
+	
+---------------------------	
+SELECT count(ARRIVAL_DELAYInMinutes) 
+	FROM flightdata
+	WHERE ARRIVAL_DELAYInMinutes = 0
+-----------------------------
+
+--- Delays in different days of the week
+SELECT DAY_OF_WEEK,
+	   count(DEPARTURE_DELAYInMinutes) as count_departure_delay,
+	   avg(DEPARTURE_DELAYInMinutes) as avg_departure_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by DAY_OF_WEEK
+	ORDER by 1;
+
+--- fewer delays by day of the week
+SELECT DAY_OF_WEEK,
+	   count(DEPARTURE_DELAYInMinutes) as count_departure_delay,
+	   avg(DEPARTURE_DELAYInMinutes) as avg_departure_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by DAY_OF_WEEK
+	ORDER by 2;
+
+
+SELECT DAY_OF_WEEK,
+	   count(ARRIVAL_DELAYInMinutes) as count_arrival_delay,
+	   avg(ARRIVAL_DELAYInMinutes) as avg_arrival_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by DAY_OF_WEEK
+	ORDER by 1;
+	
+--- Delays in days (in month)
+SELECT DAY,
+	   count(DEPARTURE_DELAYInMinutes) as count_departure_delay,
+	   avg(DEPARTURE_DELAYInMinutes) as avg_departure_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by DAY
+	ORDER by 1;
+
+
+SELECT DAY,
+	   count(ARRIVAL_DELAYInMinutes) as count_arrival_delay,
+	   avg(ARRIVAL_DELAYInMinutes) as avg_arrival_delay
+	FROM flightdata
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by DAY
+	ORDER by 1;
+	
+--- Just viewing the tables	
+SELECT IATA_CODE
+	FROM airlines;
+SELECT DISTINCT IATA_CODE_AIRLINE FROM flightdata;
+
+--- Fewer delays by airlines
+SELECT 	flightdata.IATA_CODE_AIRLINE,
+		airlines.AIRLINE,
+		count(flightdata.DEPARTURE_DELAYInMinutes) as &quot;Departure delay&quot;,
+		avg (flightdata.DEPARTURE_DELAYInMinutes)as &quot;Average departure delay time&quot;,
+		count(flightdata.ARRIVAL_DELAYInMinutes) as &quot;Arrival delay&quot;,
+		avg(flightdata.ARRIVAL_DELAYInMinutes) as &quot;Average arrival delay time&quot;
+		
+	FROM flightdata flightdata 
+	JOIN airlines airlines
+	on	flightdata.IATA_CODE_AIRLINE = airlines.IATA_CODE
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+	GROUP by airlines.AIRLINE
+	ORDER by &quot;Departure delay&quot;, &quot;Arrival delay&quot;
+
+------ Fewer delays by time
+SELECT 	DISTINCT
+		SCHEDULEDDEPARTURE_TIME
+	FROM flightdata
+	ORDER by SCHEDULEDDEPARTURE_TIME;
+	
+SELECT 	DISTINCT
+		SCHEDULEDARRIVAL_TIME
+	FROM flightdata
+	ORDER by SCHEDULEDARRIVAL_TIME;
+-----------------------------------------------------
+SELECT SCHEDULEDDEPARTURE_TIME
+	FROM flightdata
+
+SELECT CAST(SCHEDULEDDEPARTURE_TIME as NUMERIC) as SCHEDULEDDEPARTURE_TIME_int
+	FROM flightdata
+
+SELECT 	
+		CASE 	WHEN SCHEDULEDDEPARTURE_TIME BETWEEN 6 AND 8 THEN '0 to 9 am'
+				WHEN SCHEDULEDDEPARTURE_TIME BETWEEN 12 AND 15 THEN '12 to 3 pm'
+				WHEN SCHEDULEDDEPARTURE_TIME BETWEEN 20 AND 22 THEN '8 to 10 pm'
+				ELSE 'other' END as time_group,
+		count(1) as time_group_count
+	FROM flightdata flightdata 
+	WHERE DEPARTURE_DELAYInMinutes &lt;= 299
+	AND	  ARRIVAL_DELAYInMinutes &lt;= 299
+
+----------------
+-- Calculate correlation (in Excel)</sql><sql name="SQL 4">-- Thi Thu Trang Nguyen
+Student ID: 104255969
+Email: 104255969@student.swin.edu.au 
+
+-- On-time performance
+SELECT 	min(DEPARTURE_DELAY),
+		avg(DEPARTURE_DELAY),
+		max(DEPARTURE_DELAY)
+	FROM flights
+	
+-- Arrival delay: on-time performance
+SELECT
+	CASE WHEN ARRIVAL_DELAY &lt; 0 THEN 'Early arrival'
+		 WHEN ARRIVAL_DELAY == 0 THEN 'No delays'
+		 WHEN ARRIVAL_DELAY &lt; 30 THEN '1-less than 30 mins'
+		 WHEN ARRIVAL_DELAY BETWEEN 30 AND 59 THEN '2-30 mins to less than 1 hr'
+		 WHEN ARRIVAL_DELAY BETWEEN 60 AND 179 THEN '3-1 hr to less than 3 hrs'
+		 WHEN ARRIVAL_DELAY BETWEEN 60 AND 299 THEN '4-3 hrs to less than 5 hrs'
+		 WHEN ARRIVAL_DELAY BETWEEN 300 and 479 THEN '5-5 hrs to less than 8 hrs'
+		 ELSE '6-8 hrs and over' END AS delay_time,
+	count (ARRIVAL_DELAY)
+	FROM flights
+	GROUP by delay_time
+	ORDER by delay_time;</sql><current_tab id="2"/></tab_sql></sqlb_project>
